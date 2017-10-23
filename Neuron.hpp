@@ -12,7 +12,7 @@ using namespace std;
 class Neuron 
 {
 	public :
-		Neuron (); 
+		Neuron (double ext_current); 
 		~Neuron ();
 		
 		bool update(int time); 

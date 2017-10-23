@@ -5,8 +5,7 @@
 
 //teste si potentiel de membrane computed correctly and right time
 TEST (Neuron, PositiveInput){
-	Neuron neuron; 
-	neuron.setExtCurrent(1.0); 
+	Neuron neuron (1.0); 
 
 	//test the computation of membrane potentiel
 	neuron.update(1);
@@ -27,8 +26,7 @@ TEST (Neuron, PositiveInput){
 }	
 
 TEST (Neuron, NegativeInput){
-	/*Neuron neuron;
-	neuron.setExtCurrent(1.0);
+	/*Neuron neuron(1.0);
 	
 	neuron.update(943); */
 

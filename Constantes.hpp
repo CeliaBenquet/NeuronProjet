@@ -15,7 +15,7 @@ double const TAU =20; // c*r
 double const POTENTIAL_MAX = 20.0; //est atteint quand firing threshold
 double const REFRACTORY_TIME = 1.0; //temps ou on met pas a jour le potentiel
 double const J = 0.1; //potentiel envoyé par un neuron a un autre
-double const DELAY = 3; //temps de transmission avant que l autre neuron recoive le spike
+double const DELAY = 15; //temps de transmission avant que l autre neuron recoive le spike
 int const BUFFER_SIZE = 1+DELAY; //taille du tableau circulaire
 
 #endif
