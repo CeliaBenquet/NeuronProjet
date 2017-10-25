@@ -3,12 +3,18 @@
 
 //constructeur
 //user chooses the Tstart but most of the time 0
-Neuron::Neuron ()
+Neuron::Neuron (bool exitatory)
 : potential_membrane_(POTENTIAL_RESET),tau_(TAU/STEP), c_(C), clock_(0),
-  spiked_(false), ext_current_(EXT_CURRENT)
+  spiked_(false), exitatory_(exitatory)
 {
 	nbr_spikes_=0;
 	spikes_times_.clear();
+	delay_buffer_ = { };
+
+	if (exitatory_){
+		j_=Je;
+	}
+	else j_ =Ji; 
 }
 
 //destruteur
@@ -58,10 +64,8 @@ bool Neuron::isRefractory(int time) {
 void Neuron::updatePotential(){
 	potential_membrane_ = exp(-STEP/(tau_*STEP))*potential_membrane_ + ext_current_*((tau_*STEP)/c_)
 							  *(1-exp(-STEP/(tau_*STEP))); 
-	cout << "update potential" <<endl; 
 	//ajoute la valeur dans la case correspondante si jamais reception d un spike a cet intervalle de temps
 	potential_membrane_ += delay_buffer_[clock_ % delay_buffer_.size()]; 	
-	if (delay_buffer_[clock_ % delay_buffer_.size()] > 0.0) cout << "j augmente de J !!!!!!!!!!!!!!!!!!!!!!" <<endl ;
 
 }
 
@@ -75,13 +79,17 @@ void Neuron::spiking(int time){
 
 //============================receive===================================
 
-//recoit un spike de potentiel j dans un certain temps delay
+//recoit un spike de potentiel j (positif ou negatif)dans un certain temps delay
 /*on a delay_buffer_ un tableau qu on rend circulaire en utlisant le modulo
  *on ajoute une valeur a la case correspondant a l intervalle de temps actuel
  *+ le delai de transmission*/
-void Neuron::receive (int delay , double j){
-	delay_buffer_[(clock_ + delay) % delay_buffer_.size()] += j; 
-	if (delay_buffer_[(clock_ + delay) % delay_buffer_.size()] >0.0)cout << "je recois un message avec j = " << j <<endl; 
+void Neuron::receiveSpike (int delay , double j){
+	delay_buffer_[(clock_ + delay) % delay_buffer_.size()] += j; 	
+}
+
+//spikes aleatoirement recu du reste du cerveau
+void Neuron::receiveRandom (){
+	///a completer
 }
 
 //============================getters===================================
@@ -95,4 +103,4 @@ int Neuron::getClock() const{return clock_;}
 array<double, BUFFER_SIZE> Neuron::getBuffer(){return delay_buffer_;}
 bool Neuron::getSpiked() const{return spiked_; } 
 int Neuron::getNbrSpikes() const{return nbr_spikes_;}
-
+double Neuron::getJ() const {return j_;}

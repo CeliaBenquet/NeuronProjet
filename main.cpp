@@ -25,7 +25,6 @@ int main(int argc, char **argv)
 		++time; 
 	}
 	
-	cout << " jai fonctionneeeeee" <<endl; 
 	return 0;
 }
 

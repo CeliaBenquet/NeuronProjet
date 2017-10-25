@@ -6,7 +6,7 @@
 #include <cmath>
 #include "Neuron.hpp"
 #include "Constantes.hpp"
-
+#include "Random.hpp"
 
 using namespace std; 
 
@@ -23,6 +23,7 @@ class Network
 	private : 
 		vector <Neuron*> neurons_;
 		vector <vector<int> > connexions_;
+		random_background_;
 };
 
 #endif

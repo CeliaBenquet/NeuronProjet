@@ -12,7 +12,7 @@ using namespace std;
 class Neuron 
 {
 	public :
-		Neuron (double ext_current); 
+		Neuron (bool exitatory); 
 		~Neuron ();
 		
 		bool update(int time); 
@@ -27,14 +27,19 @@ class Neuron
 		array<double, BUFFER_SIZE> getBuffer(); 
 		bool getSpiked() const; 
 		int getNbrSpikes() const;
+		double getJ() const; 
 		
 		//si recoit un spike on update avec +J
-		void receive (int delay , double j); 
+		void receiveSpike (int delay , double j);
+		
+		void receiveRandom (); 
 	
 	private :
 		double potential_membrane_;
 		// compte le nombre de spikes
 		int nbr_spikes_; 
+		
+		double j_;
 		
 		//courant externe que le neuron recoit		
 		double ext_current_; 
@@ -48,6 +53,7 @@ class Neuron
 		void spiking(int time);
 		void updatePotential();
 
+		bool exitatory_;
 
 		//capacite membranaire 
 		double c_; 
