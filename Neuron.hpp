@@ -9,66 +9,59 @@
 
 using namespace std; 
 
+/*! @class Neuron 
+ * 
+ * @brief A neuron that can interact with its environment 
+ * 
+ */
 class Neuron 
 {
 	public :
-		Neuron (bool exitatory); 
-		~Neuron ();
+		Neuron (bool exitatory); /**< Constructor */
+		~Neuron (); /**<Destructor */
 		
-		bool update(int time); 
+		bool update(int time); /**< Update function */
 		
-		vector<double> getTimes() const; 
-		vector<double> getPotentials() const; 
-		double getPotentialMembrane() const; 
-		double getExtCurrent() const; 
-		void setExtCurrent(double value); 
-		int getClock() const;
-		void setPotentialMembrane(double potentiel); 
-		array<double, BUFFER_SIZE> getBuffer(); 
-		bool getSpiked() const; 
-		int getNbrSpikes() const;
-		double getJ() const; 
+		vector<double> getTimes() const; /**< Getter of spikes_times_ */
+		vector<double> getPotentials() const;  /**< Getter of potentials_ */
+		double getPotentialMembrane() const; /**< Getter of potential_membrane_ */
+		double getExtCurrent() const;  /**< Getter of ext_current_ */
+		void setExtCurrent(double value); /**< Setter of ext_current */
+		int getClock() const; /**< Getter of clock_ */
+		void setPotentialMembrane(double potentiel); /**< Setter of potential_membrane_ */
+		array<double, BUFFER_SIZE> getBuffer(); /**< Getter of delay_buffer_ */
+		bool getSpiked() const; /**< Getter of spiked_ */
+		int getNbrSpikes() const; /**< Getter of nbr_spikes_ */
+		double getJ() const; /**< Getter of j_ */
 		
-		//si recoit un spike on update avec +J
-		void receiveSpike (int delay , double j);
-		
-		void receiveRandom (); 
+		void receiveSpike (int delay , double j); //!< receive the message of the connected neurons that spiked
+		void receiveRandom (); //!< receive the random current from the background activity
 	
 	private :
-		double potential_membrane_;
-		// compte le nombre de spikes
-		int nbr_spikes_; 
+		double potential_membrane_; /**< Membrane potential */
+		int nbr_spikes_; /**< Count the number of spikes */
 		
-		double j_;
+		double j_;/**< post synaptic potential J when neuron spikes  */
 		
-		//courant externe que le neuron recoit		
-		double ext_current_; 
+		double ext_current_; /**< External Current */
 		
-		//tableau qui stocke les temps ou apparaissent les spikes
-		vector <double> spikes_times_; 
-		//tableau qui stocke les potentiels
-		vector <double> potentials_; 
+		vector <double> spikes_times_; /**< Vector stores the times of the spikes */
+		vector <double> potentials_; /**< Vector store the membrane potentials at each step */
 		
-		bool isRefractory(int time); 
-		void spiking(int time);
-		void updatePotential();
+		bool isRefractory(int time); /**< Boolean function is refractory */
+		void spiking(int time); /**< Void function update if spike */
+		void updatePotential(); /**< Void function update the membrane potential at each step */
 
-		bool exitatory_;
+		bool exitatory_; /**< Boolean exitatoy */
 
-		//capacite membranaire 
-		double c_; 
-		//tau = resistance membranaire * capacite membranaire
-		//un intervalle de temps
-		int tau_; 
+		double c_; /**< Membrane capacity */
+		int tau_; /**< time interval tau = membrane resistance * membrane capacity */
 		
-		//horloge du neuron qui commence a sa creation 
-		int clock_;
+		int clock_; /**< time interval : Internal clock*/
 		
-		//si emet un spike 
-		bool spiked_; 
+		bool spiked_; /**< Boolean has emitted a spike */
 		
-		//stocke les spikes que doit resevoir le neuron
-		array<double, BUFFER_SIZE> delay_buffer_; 
+		array<double, BUFFER_SIZE> delay_buffer_; /**< Array stockes the messages of connected neurons  */
  };
 
 #endif

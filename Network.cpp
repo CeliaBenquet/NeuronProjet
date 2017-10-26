@@ -2,6 +2,10 @@
 #include <cassert>
 #include <random>
 
+/*!
+ * @brief Initiate the network to a network of inhibitory and exitatory neurons
+ *
+ */
 Network::Network()
 {
 	//on crée 12500 neurons certains inhibiteurs d autres exitateurs
@@ -55,6 +59,12 @@ Network::Network()
 	assert(connexions_.size() == neurons_.size()); 
 }
 
+/*!
+ * @brief Destructor
+ * 
+ * Delete the ptr of the neurons_ table at the end of the simulation
+ */
+
 Network::~Network() 
 {
 	for (size_t i (0); i < neurons_.size(); ++i){
@@ -63,6 +73,15 @@ Network::~Network()
 	}
 }
 
+/*!
+ * @brief Update the network 
+ * 
+ * Update each neurons of the network 
+ * if they spike send the message to the neurons receivers
+ *
+ * @param time clock of the simulation,corresponds to  an intervalle
+ */
+ 
 void Network::update (int time){
 	//pour chaque neuron du reseau
 	for(size_t neuron(0); neuron<neurons_.size(); ++neuron){
@@ -85,4 +104,10 @@ void Network::update (int time){
 	} 
 }
 
+/*!
+ * @brief Getter of the table of all the neurones of the Network
+ * 
+ * @return Table of neurons
+ */
+ 
 vector <Neuron*> Network::getNeurons() const {return neurons_;}
