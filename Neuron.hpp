@@ -6,6 +6,7 @@
 #include <cmath>
 #include <array>
 #include "Constantes.hpp"
+#include <random>
 
 using namespace std; 
 
@@ -17,10 +18,10 @@ using namespace std;
 class Neuron 
 {
 	public :
-		Neuron (bool exitatory); /**< Constructor */
+		Neuron (bool exitatory, bool test); /**< Constructor */
 		~Neuron (); /**<Destructor */
 		
-		bool update(int time); /**< Update function */
+		void update(int time); /**< Update function */
 		
 		vector<double> getTimes() const; /**< Getter of spikes_times_ */
 		vector<double> getPotentials() const;  /**< Getter of potentials_ */
@@ -33,11 +34,16 @@ class Neuron
 		bool getSpiked() const; /**< Getter of spiked_ */
 		int getNbrSpikes() const; /**< Getter of nbr_spikes_ */
 		double getJ() const; /**< Getter of j_ */
+		void addConnexions(int new_connexion); 
+		vector <double> getSpikesTimes() const;
 		
 		void receiveSpike (int delay , double j); //!< receive the message of the connected neurons that spiked
-		void receiveRandom (); //!< receive the random current from the background activity
+		void receiveNoise (); //!< receive the random current from the background activity
+		vector<int> getConnexions() const; 
 	
 	private :
+		bool test_;
+	
 		double potential_membrane_; /**< Membrane potential */
 		int nbr_spikes_; /**< Count the number of spikes */
 		
@@ -61,7 +67,9 @@ class Neuron
 		
 		bool spiked_; /**< Boolean has emitted a spike */
 		
-		array<double, BUFFER_SIZE> delay_buffer_; /**< Array stockes the messages of connected neurons  */
+		array<double, BUFFER_SIZE> delay_buffer_; //!< Array stockes the messages of connected neurons 
+		
+		vector <int> connexions_; //!< Received connexions of the neuron
  };
 
 #endif

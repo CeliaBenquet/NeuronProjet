@@ -14,14 +14,23 @@ int main(int argc, char **argv)
 	Network network;
 	
 	ofstream sortie;
-	sortie.open("membrane_potentials.txt"); 
-	sortie << "Potentiels de membrane sur l intervalle de temps [" << TSTART 
+	sortie.open("membranepotentials.txt"); 
+	sortie << "Membrane potentials in time intervall [" << TSTART 
 		   << "," << TSTOP << "]" <<endl;
-		   
+		  
+	ofstream file;
+	file.open("spikes.gdf"); 
+	 
 	while (time <= TSTOP/STEP){
-		network.update(time); 
-		sortie << "P1(" << time*STEP << ") = " << network.getNeurons()[0]->getPotentialMembrane()
-			   << "  P2(" << time*STEP << ") = " << network.getNeurons()[1]->getPotentialMembrane() << endl;
+		
+		network.update(time, file); 
+		
+		
+		sortie << "P1(" << time*STEP << ")=" << network.getNeurons()[0]->getPotentialMembrane()
+			   << "  P2(" << time*STEP << ")=" << network.getNeurons()[1]->getPotentialMembrane()		
+			   << " P115(" << time*STEP << ")=" << network.getNeurons()[114]->getPotentialMembrane()
+			   << "  P116(" << time*STEP << ")=" << network.getNeurons()[115]->getPotentialMembrane() << endl;
+
 		++time; 
 	}
 	

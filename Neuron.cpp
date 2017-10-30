@@ -7,12 +7,13 @@
  * 
  * @param exitatory boolean to determine the type of neuron inhibitor or exitator
  */
-Neuron::Neuron (bool exitatory)
+Neuron::Neuron (bool exitatory, bool test)
 : potential_membrane_(POTENTIAL_RESET),tau_(TAU/STEP), c_(C), clock_(0),
-  spiked_(false), exitatory_(exitatory)
+  spiked_(false), exitatory_(exitatory), test_ (test), ext_current_(EXT_CURRENT)
 {
 	nbr_spikes_=0;
 	spikes_times_.clear();
+	connexions_.clear(); 
 	delay_buffer_ = { };
 
 	if (exitatory_){
@@ -33,7 +34,7 @@ Neuron::~Neuron(){}
  * @param time clock of the global simulation 
  * @return boolean value if the neuron spiked in the time interval 
  */
-bool Neuron::update(int time)
+void Neuron::update(int time)
 {
 	//reinitializes the boolean spiked_
 	spiked_ = false; 
@@ -55,8 +56,6 @@ bool Neuron::update(int time)
 	delay_buffer_[clock_ % delay_buffer_.size()] = 0.0; 
 	
 		++clock_; 
-	
-	return spiked_; 
 }
 
 /*when spikes : potential value = potential max*/
@@ -82,8 +81,11 @@ void Neuron::updatePotential(){
 	potential_membrane_ = exp(-STEP/(tau_*STEP))*potential_membrane_ + ext_current_*((tau_*STEP)/c_)
 							  *(1-exp(-STEP/(tau_*STEP))); 
 	//add the value of the corresponding case if message reception in time intervall
-	potential_membrane_ += delay_buffer_[clock_ % delay_buffer_.size()]; 	
-
+	potential_membrane_ += delay_buffer_[clock_ % delay_buffer_.size()]; 
+	
+	if(not test_){
+		receiveNoise();
+	}	
 }
 
 /*! 
@@ -97,6 +99,7 @@ void Neuron::updatePotential(){
  * @param time clock of the simulation to be added to the table of times
  */
 void Neuron::spiking(int time){
+	cout << "is spiking " <<endl; 
 	potentials_.push_back(POTENTIAL_MAX);
 	potential_membrane_ = POTENTIAL_RESET; 
 	spikes_times_.push_back(time*STEP); 
@@ -120,8 +123,12 @@ void Neuron::receiveSpike (int delay , double j){
 }
 
 //spikes aleatoirement recu du reste du cerveau
-void Neuron::receiveRandom (){
-	///a completer
+void Neuron::receiveNoise (){
+	static random_device rd;
+	static mt19937 gen(rd()); 
+	static poisson_distribution<int> poisson (MU*STEP); 
+	
+	potential_membrane_ += poisson(gen)*Jext; 
 }
 
 //============================getters===================================
@@ -180,3 +187,9 @@ int Neuron::getNbrSpikes() const{return nbr_spikes_;}
  * @returnthe post synaptic potential J
  */
 double Neuron::getJ() const {return j_;}
+
+void Neuron::addConnexions(int new_connexion){connexions_.push_back(new_connexion);}
+
+vector<int> Neuron::getConnexions() const{return connexions_;} 
+
+vector <double> Neuron::getSpikesTimes() const {return spikes_times_;} 

@@ -6,7 +6,7 @@
 #include <cmath>
 #include "Neuron.hpp"
 #include "Constantes.hpp"
-#include "Random.hpp"
+#include <fstream>
 
 using namespace std; 
 
@@ -22,12 +22,13 @@ class Network
 		
 		vector <Neuron*> getNeurons() const; /**< Getter de neurons_ */
 		
-		void update (int time); /**< Update function */
+		void update (int time, ofstream& sortie); /**< Update function */
+		vector <int> randomConnections(int a, int b, int nbr_connexion);
+		void createConnexions();
+
 		
 	private : 
 		vector <Neuron*> neurons_;			/**< Table of ptr on neurons */
-		vector <vector<int> > connexions_;	/**< Table of integers corresponding to the number of connexions between 2 neuorns of the Network*/
-		random_background_;
 };
 
 #endif
