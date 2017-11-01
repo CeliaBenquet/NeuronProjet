@@ -99,7 +99,6 @@ void Neuron::updatePotential(){
  * @param time clock of the simulation to be added to the table of times
  */
 void Neuron::spiking(int time){
-	cout << "is spiking " <<endl; 
 	potentials_.push_back(POTENTIAL_MAX);
 	potential_membrane_ = POTENTIAL_RESET; 
 	spikes_times_.push_back(time*STEP); 
@@ -122,13 +121,18 @@ void Neuron::receiveSpike (int delay , double j){
 	delay_buffer_[(clock_ + delay) % delay_buffer_.size()] += j; 	
 }
 
-//spikes aleatoirement recu du reste du cerveau
+/*!
+ * @brief Send a random potential to the neuron from the activity background
+ * 
+ * The random number is chose following the Poisson distribution.
+ * This number multiplies the externe potential and is added to the membrane potential.
+ */
 void Neuron::receiveNoise (){
 	static random_device rd;
 	static mt19937 gen(rd()); 
-	static poisson_distribution<int> poisson (MU*STEP); 
+	static poisson_distribution<int> poisson (ETA); 
 	
-	potential_membrane_ += poisson(gen)*Jext; 
+	potential_membrane_ += poisson(gen)*POTENTIAL_EXT; 
 }
 
 //============================getters===================================
@@ -184,12 +188,23 @@ bool Neuron::getSpiked() const{return spiked_; }
 int Neuron::getNbrSpikes() const{return nbr_spikes_;}
 /*! 
  * @brief Getter of the post synaptic potential
- * @returnthe post synaptic potential J
+ * Depends on the type of neuron (exitatory or inhibitory)
+ * @return the post synaptic potential J
  */
 double Neuron::getJ() const {return j_;}
-
+/*! 
+ * @brief Add a value of connection at the end of the table 
+ * 
+ * @param new_connexion integer number corresponding to the index of a neuron of the Network
+ */
 void Neuron::addConnexions(int new_connexion){connexions_.push_back(new_connexion);}
-
+/*! 
+ * @brief Getter of the connexions_
+ * @return table of the connexions to the neuron
+ */
 vector<int> Neuron::getConnexions() const{return connexions_;} 
-
+/*! 
+ * @brief Getter of the times of each spikes
+ * @return table of the time of the spikes 
+ */
 vector <double> Neuron::getSpikesTimes() const {return spikes_times_;} 

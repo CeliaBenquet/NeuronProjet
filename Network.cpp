@@ -3,7 +3,7 @@
 #include <random>
 
 /*!
- * @brief Initiate the network to a network of inhibitory and exitatory neurons
+ * @brief Initiate a network of inhibitory and exitatory neurons 
  *
  */
 Network::Network()
@@ -18,39 +18,84 @@ Network::Network()
 		neurons_.push_back(new Neuron(0, 0));
 	}
 	
-	//on cree un tableau de connexions aleatoires au x neurons du network 
+	//creation of a table of all the connexions of the neurons 
+	//connexions  
 	createConnexions();
 	
 }
 
-void Network::createConnexions(){
-	for(auto& neuron : neurons_){
-		for(auto& random_exitatory_connected : randomConnections(0, NE, CE)){
-			neuron->addConnexions(random_exitatory_connected); 
-		}
-		for(auto& random_inhibitory_connected : randomConnections(0, NI, CI)){
-			neuron->addConnexions(random_inhibitory_connected); 
-		}
-		//on verifie que les tableaux font la meme taille 
-		assert(neuron->getConnexions().size() == CE+CI); 
-	}
-}
+/*!
+ * @brief Create a table with random numbers using the uniform distribution.
+ * 
+ * @param a lower bound 
+ * @param b upper bound
+ * 
+ * @return A table of aleatory numbers
+ */
+vector <int> Network::randomConnectionsExi(int a, int b, int nbr_connexion){
 
-vector <int> Network::randomConnections(int a, int b, int nbr_connexion){
-	static default_random_engine randomGenerator;
-	static uniform_int_distribution<int> distNeuron(a,b);
+	static random_device rd; 
+	static mt19937 gen(rd()); 
+	static uniform_int_distribution<int> exc (a, b); 
+	
 	vector<int> connexions; 
 	connexions.clear();
+	
 	int i(0);
 	do{
 		int aleatory (0);
-		aleatory = distNeuron(randomGenerator);
+		aleatory = exc(gen);
 		connexions.push_back(aleatory);
 		++i;
 	} while(i<nbr_connexion);
 	
 	return connexions;
 }
+
+vector <int> Network::randomConnectionsInh(int a, int b, int nbr_connexion){
+
+	static random_device rd; 
+	static mt19937 gen(rd()); 
+	static uniform_int_distribution<int> inh (a, b); 
+	
+	vector<int> connexions; 
+	connexions.clear();
+	
+	int i(0);
+	do{
+		int aleatory (0);
+		aleatory = inh(gen);
+		connexions.push_back(aleatory);
+		++i;
+	} while(i<nbr_connexion);
+	
+	return connexions;
+}
+/*!
+ * @brief Create the connexions_ table of each neuron
+ * 
+ * A connection is from an emitter neuron to the current instance.
+ * Those connexions are represented by random numbers. 
+ * One number corresponds to the index of a neuron in the neurons_ table.
+ * The connexions_ table is constituted of connexions with exitatory then inhibitory neurons.
+ * 
+ */
+ 
+void Network::createConnexions(){
+	for(auto& neuron : neurons_){
+		//connections with exitatory
+		for(auto& random_exitatory_connected : randomConnectionsExi(0, NE, CE)){
+			neuron->addConnexions(random_exitatory_connected); 
+		}
+		//connections with inhibitory
+		for(auto& random_inhibitory_connected : randomConnectionsInh(0, NI, CI)){
+			neuron->addConnexions(random_inhibitory_connected); 
+		}
+		//verification that the connections_ table is the right size
+		assert(neuron->getConnexions().size() == CE+CI); 
+	}
+}
+
 
 /*!
  * @brief Destructor
@@ -68,28 +113,28 @@ Network::~Network()
 /*!
  * @brief Update the network 
  * 
- * Update each neurons of the network 
- * if they spike send the message to the neurons receivers
+ * Each neurons of the network are updated. 
+ * If the connected neurons spiked, update the delay buffer of the current instance.
  *
- * @param time clock of the simulation,corresponds to  an intervalle
+ * @param time clock of the simulation, corresponds to an intervalle
  */
  
-void Network::update (int time, ofstream& file){
+void Network::update (int time, ofstream& spikes_file){
 	
-	
-	
+	//update the potential 
 	for(auto& neuron : neurons_){
 		neuron->update(time); 
 	}
 	
 	for(size_t neuron(0); neuron < neurons_.size(); ++neuron){
 		for(auto& connexion : neurons_[neuron]->getConnexions()){
+			//if the connected neurons spiked then the current instance update its delay buffer                                                                                                                                                                                                                                                                                                                           
 			if(neurons_[connexion]->getSpiked()){
 				neurons_[neuron]->receiveSpike(DELAY/STEP, neurons_[neuron]->getJ());
 			}	
 		}
 		if(not neurons_[neuron]->getSpikesTimes().empty()){
-		file << "Neuron " << neuron+1 << " spikes at " << neurons_[neuron]->getSpikesTimes().back() << endl;
+		spikes_file << (neurons_[neuron]->getSpikesTimes().back())/STEP << "\t" << neuron+1 << endl;
 		}
 	}		
 }

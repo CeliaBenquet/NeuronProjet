@@ -4,8 +4,8 @@
 #include "Constantes.hpp"
 
 //teste si potentiel de membrane computed correctly and right time
-/*TEST (NeuronTest, PositiveInput){
-	Neuron neuron; 
+TEST (NeuronTest, PositiveInput){
+	Neuron neuron(1,1); 
 	neuron.setExtCurrent(1.0); 
 
 	//test the computation of membrane potentiel
@@ -16,23 +16,35 @@
 	neuron.update(10000);
 	//membrane potential should tend to 20
 	//the neuron should never spike
-	EXPECT_EQ(0, neuron.getNbrSpikes());
-	//EXPECT_GT(1E-3, fabs(19.999 -neuron.getPotentialMembrane()));
-	
+	EXPECT_EQ(0, neuron.getNbrSpikes());	
 	//the membrane potential should tend naturally towards  with no input 
 	neuron.setExtCurrent(0.0);
 	//we wait 10 * tau_
 	neuron.update(2000);
-	//EXPECT_NEAR(0, neuron.getPotentialMembrane(), 10E-3);
-}	*/
+}	
 
 TEST (Neuron_test, StandAloneSimulation){
-	Neuron neuron; 
-	neuron.setExtCurrent(1.01);
-	
-			bool spike = neuron.update(4000);
-
+	Neuron neuron(1,1); 
+	neuron.setExtCurrent(10.1);
+	for (int i(0); i < 124; ++i){
+		neuron.update(i); 
+	}
 	EXPECT_EQ(4, neuron.getNbrSpikes()); 
+}
+
+TEST (Neuron_test, MembranePotential){
+	Neuron neuron(1,1);
+	
+	for(int i(0); i<8; ++i){
+		neuron.update(i);
+	} 
+	EXPECT_NEAR(neuron.getPotentialMembrane(), 18, 3); 
+	
+	for(int i(8); i<15; ++i){
+		neuron.update(i);
+	}
+	EXPECT_EQ(neuron.getPotentialMembrane(), 0.0); 
+
 }
 
 /*TEST (TwoNeurons, NoPSSpike){

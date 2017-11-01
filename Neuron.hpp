@@ -18,31 +18,35 @@ using namespace std;
 class Neuron 
 {
 	public :
-		Neuron (bool exitatory, bool test); /**< Constructor */
-		~Neuron (); /**<Destructor */
+		Neuron (bool exitatory, bool test); 
+		~Neuron (); 
 		
-		void update(int time); /**< Update function */
+		void update(int time); 
 		
-		vector<double> getTimes() const; /**< Getter of spikes_times_ */
-		vector<double> getPotentials() const;  /**< Getter of potentials_ */
-		double getPotentialMembrane() const; /**< Getter of potential_membrane_ */
-		double getExtCurrent() const;  /**< Getter of ext_current_ */
-		void setExtCurrent(double value); /**< Setter of ext_current */
-		int getClock() const; /**< Getter of clock_ */
-		void setPotentialMembrane(double potentiel); /**< Setter of potential_membrane_ */
-		array<double, BUFFER_SIZE> getBuffer(); /**< Getter of delay_buffer_ */
-		bool getSpiked() const; /**< Getter of spiked_ */
-		int getNbrSpikes() const; /**< Getter of nbr_spikes_ */
-		double getJ() const; /**< Getter of j_ */
+		vector<double> getTimes() const; 
+		vector<double> getPotentials() const;  
+		double getPotentialMembrane() const; 
+		double getExtCurrent() const;  
+		void setExtCurrent(double value); 
+		int getClock() const; 
+		void setPotentialMembrane(double potentiel); 
+		array<double, BUFFER_SIZE> getBuffer(); 
+		bool getSpiked() const; 
+		int getNbrSpikes() const; 
+		double getJ() const;
 		void addConnexions(int new_connexion); 
 		vector <double> getSpikesTimes() const;
 		
-		void receiveSpike (int delay , double j); //!< receive the message of the connected neurons that spiked
-		void receiveNoise (); //!< receive the random current from the background activity
+		void receiveSpike (int delay , double j); 
+		void receiveNoise (); 
 		vector<int> getConnexions() const; 
 	
-	private :
-		bool test_;
+	protected :		
+		bool isRefractory(int time); 
+		void spiking(int time); 
+		void updatePotential(); 
+
+		bool test_; ///< Allows to put a test mode with no random activity
 	
 		double potential_membrane_; /**< Membrane potential */
 		int nbr_spikes_; /**< Count the number of spikes */
@@ -54,22 +58,18 @@ class Neuron
 		vector <double> spikes_times_; /**< Vector stores the times of the spikes */
 		vector <double> potentials_; /**< Vector store the membrane potentials at each step */
 		
-		bool isRefractory(int time); /**< Boolean function is refractory */
-		void spiking(int time); /**< Void function update if spike */
-		void updatePotential(); /**< Void function update the membrane potential at each step */
-
 		bool exitatory_; /**< Boolean exitatoy */
 
 		double c_; /**< Membrane capacity */
 		int tau_; /**< time interval tau = membrane resistance * membrane capacity */
 		
-		int clock_; /**< time interval : Internal clock*/
+		int clock_; /**< time interval Internal clock*/
 		
-		bool spiked_; /**< Boolean has emitted a spike */
+		bool spiked_; /*!< Boolean has emitted a spike */
 		
 		array<double, BUFFER_SIZE> delay_buffer_; //!< Array stockes the messages of connected neurons 
 		
-		vector <int> connexions_; //!< Received connexions of the neuron
+		vector <int> connexions_; //!< Received the connexions of the neuron
  };
 
 #endif
