@@ -6,12 +6,12 @@
 
 
 
-int const N = 125; ///< number total of neurons
-int const NE = 100; ///< number of exitatory neurons
-int const NI = 25; ///< number of inhibitory neurons
+int const N = 1250; ///< number total of neurons
+int const NE = 1000; ///< number of exitatory neurons
+int const NI = 250; ///< number of inhibitory neurons
 double const EPSILON = 0.1; ///< purcentage of connexions  between neurons
-int const CE = 10; ///< number of connexion to exitatory neurons 
-int const CI = 3; ///< number of connexions to inhibitory neurons
+int const CE = 100; ///< number of connexion to exitatory neurons 
+int const CI = 25; ///< number of connexions to inhibitory neurons
 
 double const TSTART = 0.0; ///< beginning of the simulation
 double const TSTOP = 100.0;  ///< end of the simulation

@@ -24,6 +24,7 @@ class Simulation
 		
 	protected : 
 		void printPotential(); 
+		void rightSimulation(); 
 
 		int Tstop_; ///< time of end of the simulation
 		int n_simulation_; ///< number of the simulation

@@ -15,8 +15,12 @@ Simulation::Simulation(int n_simulation, double Tstop)
  *
  */
 void Simulation::run(){
-	if (n_simulation_ == 1){
-		printPotential(); 
+	switch(n_simulation_){
+			case 1: rightSimulation(); 
+					break; 
+			case 2: printPotential(); 
+					break; 
+			default: cout << "This simulation does not exist. Please report to the ReadMe.";
 	}
 }
 
@@ -24,7 +28,6 @@ void Simulation::run(){
  * @brief Simulation to observe the evolution of the membrane potential 
  * 
  * The membrane potential of 4 neurons are displayed in the file "membranepotentials.txt".
- * 
  *
  */
 void Simulation::printPotential(){
@@ -56,3 +59,19 @@ void Simulation::printPotential(){
 	
 }
 
+
+void Simulation::rightSimulation(){
+	int time(TSTART/STEP); 
+	Network network;
+	
+	//open the link to the file to write the spikes times 	
+	ofstream spikes_file;
+	spikes_file.open("spikes.gdf");  
+	 
+	while (time <= Tstop_/STEP){
+		
+		network.update(time, spikes_file); 
+		cout << time << flush << endl; 
+		++time; 
+	}
+}

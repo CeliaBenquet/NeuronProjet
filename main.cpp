@@ -8,8 +8,10 @@ using namespace std;
 
 int main(int argc, char **argv) 
 {
-	
-	Simulation simulation(1, TSTOP); 
+	int n(0); 
+	cout << "Enter the simulation you want to perform (see the read me) : " ; 
+	cin >> n;
+	Simulation simulation(n, TSTOP); 
 	simulation.run();
 	
 	return 0;

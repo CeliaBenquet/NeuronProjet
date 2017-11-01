@@ -32,11 +32,11 @@ Network::Network()
  * 
  * @return A table of aleatory numbers
  */
-vector <int> Network::randomConnectionsExi(int a, int b, int nbr_connexion){
+vector <int> Network::randomConnections(int a, int b, int nbr_connexion){
 
 	static random_device rd; 
 	static mt19937 gen(rd()); 
-	static uniform_int_distribution<int> exc (a, b); 
+	static uniform_int_distribution<int> dist (a, b); 
 	
 	vector<int> connexions; 
 	connexions.clear();
@@ -44,7 +44,7 @@ vector <int> Network::randomConnectionsExi(int a, int b, int nbr_connexion){
 	int i(0);
 	do{
 		int aleatory (0);
-		aleatory = exc(gen);
+		aleatory = dist(gen);
 		connexions.push_back(aleatory);
 		++i;
 	} while(i<nbr_connexion);
@@ -52,25 +52,6 @@ vector <int> Network::randomConnectionsExi(int a, int b, int nbr_connexion){
 	return connexions;
 }
 
-vector <int> Network::randomConnectionsInh(int a, int b, int nbr_connexion){
-
-	static random_device rd; 
-	static mt19937 gen(rd()); 
-	static uniform_int_distribution<int> inh (a, b); 
-	
-	vector<int> connexions; 
-	connexions.clear();
-	
-	int i(0);
-	do{
-		int aleatory (0);
-		aleatory = inh(gen);
-		connexions.push_back(aleatory);
-		++i;
-	} while(i<nbr_connexion);
-	
-	return connexions;
-}
 /*!
  * @brief Create the connexions_ table of each neuron
  * 
@@ -84,11 +65,11 @@ vector <int> Network::randomConnectionsInh(int a, int b, int nbr_connexion){
 void Network::createConnexions(){
 	for(auto& neuron : neurons_){
 		//connections with exitatory
-		for(auto& random_exitatory_connected : randomConnectionsExi(0, NE, CE)){
+		for(auto& random_exitatory_connected : randomConnections(0, NE, CE)){
 			neuron->addConnexions(random_exitatory_connected); 
 		}
 		//connections with inhibitory
-		for(auto& random_inhibitory_connected : randomConnectionsInh(0, NI, CI)){
+		for(auto& random_inhibitory_connected : randomConnections(0, NI, CI)){
 			neuron->addConnexions(random_inhibitory_connected); 
 		}
 		//verification that the connections_ table is the right size

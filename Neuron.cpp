@@ -9,7 +9,7 @@
  */
 Neuron::Neuron (bool exitatory, bool test)
 : potential_membrane_(POTENTIAL_RESET),tau_(TAU/STEP), c_(C), clock_(0),
-  spiked_(false), exitatory_(exitatory), test_ (test), ext_current_(EXT_CURRENT)
+  spiked_(false), exitatory_(exitatory), test_ (test), ext_current_(0)
 {
 	nbr_spikes_=0;
 	spikes_times_.clear();

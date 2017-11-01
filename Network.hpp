@@ -26,8 +26,7 @@ class Network
 		vector <Neuron*> getNeurons() const; 
 		
 		void update (int time, ofstream& spikes_file); 
-		vector <int> randomConnectionsExi(int a, int b, int nbr_connexion);
-		vector <int> randomConnectionsInh(int a, int b, int nbr_connexion);
+		vector <int> randomConnections(int a, int b, int nbr_connexion);
 
 		void createConnexions();
 
