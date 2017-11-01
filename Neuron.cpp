@@ -1,210 +1,101 @@
 #include "Neuron.hpp"
 
-/*!
- * @brief Constructor 
- * 
- * Value of j_ depends of the type of neuron
- * 
- * @param exitatory boolean to determine the type of neuron inhibitor or exitator
- */
-Neuron::Neuron (bool exitatory, bool test)
+
+//constructeur
+//user chooses the Tstart but most of the time 0
+Neuron::Neuron (bool exitatory)
 : potential_membrane_(POTENTIAL_RESET),tau_(TAU/STEP), c_(C), clock_(0),
-  spiked_(false), exitatory_(exitatory), test_ (test), ext_current_(0)
+  spiked_(false), ext_current_(EXT_CURRENT)
 {
 	nbr_spikes_=0;
 	spikes_times_.clear();
-	connexions_.clear(); 
 	delay_buffer_ = { };
-
-	if (exitatory_){
-		j_=Je;
-	}
-	else j_ =Ji; 
 }
 
-/*!
- * @brief Destructor by default
- * 
- */
+//destruteur
 Neuron::~Neuron(){}
 
 //=======================update=========================================
-/*! 
- * @brief Update the neuron 
- * @param time clock of the global simulation 
- * @return boolean value if the neuron spiked in the time interval 
- */
-void Neuron::update(int time)
+//update the neuron from time_ to time time_+T avec un pas de 1 (h)
+//si neuron a recu un spike update renvoie true
+bool Neuron::update(int time)
 {
-	//reinitializes the boolean spiked_
+	//on met a jour le spiked_
 	spiked_ = false; 
 	
-	/*update potential mebrane 
-	 *exept if refractoy time*/
+	//update le potentiel de membrane
+	//sauf si periode de refraction
 	if(not isRefractory(time)){
-		updatePotential(); 
+		updatePotential();
 	}
-	//if potential higher than maximum potential then spiking
+
+	//stocker le temps des spikes dans le tableau 
+	//si le potentiel est au dessus du seuil (potential_max) emet un spike
 	if (potential_membrane_ > POTENTIAL_MAX) {
 		spiking(time); 
 	}
 	else{
-		//we still need to store the value of the membrane potential
+		//stocker les potentiels dans un tableau si valeur normale
 		potentials_.push_back(potential_membrane_);
 	}
-	//reset the integer value of the buffer corresponding to the interval that just passed
+	//reset la case correspondante a l intervalle de temps du delay_buffer_
 	delay_buffer_[clock_ % delay_buffer_.size()] = 0.0; 
 	
-		++clock_; 
+	//on incremente l horloge interne du neuron 
+	++clock_; 
+	
+	return spiked_; 
 }
 
-/*when spikes : potential value = potential max*/
+/*quand spikes : valeur du potentiel = potential max*/
 
-/*!
- * @brief Compute if the neuron is in refracory time at the intervall time time
- * 
- * @param time clock of the simulation
- * @return boolean value if the neuorn is in refractory time
- */
+//renvoie true si il est dans son temps de refractory
 bool Neuron::isRefractory(int time) {
 	return (!((spikes_times_.empty()) or (time > ((spikes_times_.back()/STEP) + REFRACTORY_TIME/STEP)))); 
 }
 
-/*!
- * @brief Update the membrane potential 
- * 
- * first the normal formule
- * then the value of J if message from one of the connected neurons at this time intervall 
- * finally the random current from the background activity 
- */
+//met a jour le potentiel en ajoutant J
 void Neuron::updatePotential(){
 	potential_membrane_ = exp(-STEP/(tau_*STEP))*potential_membrane_ + ext_current_*((tau_*STEP)/c_)
 							  *(1-exp(-STEP/(tau_*STEP))); 
-	//add the value of the corresponding case if message reception in time intervall
-	potential_membrane_ += delay_buffer_[clock_ % delay_buffer_.size()]; 
-	
-	if(not test_){
-		receiveNoise();
-	}	
+							  cout << potential_membrane_ <<endl; 
+							  
+	//ajoute la valeur dans la case correspondante si jamais reception d un spike a cet intervalle de temps
+	potential_membrane_ += delay_buffer_[clock_ % delay_buffer_.size()]; 	
+	if (delay_buffer_[clock_ % delay_buffer_.size()] > 0.0) cout << "j augmente de J !!!!!!!!!!!!!!!!!!!!!!" <<endl ;
+
 }
 
-/*! 
- * @brief Compute the action to do when neuron is spiking 
- * 
- * add the value of membrane potential to the table
- * reset the membrane potential
- * increase the number of spikes since the bgging of the simulation
- * pass the boolean spiked_ to true 
- * 
- * @param time clock of the simulation to be added to the table of times
- */
 void Neuron::spiking(int time){
 	potentials_.push_back(POTENTIAL_MAX);
 	potential_membrane_ = POTENTIAL_RESET; 
 	spikes_times_.push_back(time*STEP); 
 	++nbr_spikes_;
 	spiked_ = true; 
+	cout << "is Spiking" <<endl;
+	
 }
 
 //============================receive===================================
 
-
-/*!
- * @brief Store the value of the message received from a connected neuron in a certain delay
- * 
- * delay_buffer_ is circular
- * 
- * @param delay the time it takes for the emitted spike to be received
- * @param j the value of the spike that will be received
- */
+//recoit un spike de potentiel j dans un certain temps delay
+/*on a delay_buffer_ un tableau qu on rend circulaire en utlisant le modulo
+ *on ajoute une valeur a la case correspondant a l intervalle de temps actuel
+ *+ le delai de transmission*/
 void Neuron::receiveSpike (int delay , double j){
-	delay_buffer_[(clock_ + delay) % delay_buffer_.size()] += j; 	
-}
-
-/*!
- * @brief Send a random potential to the neuron from the activity background
- * 
- * The random number is chose following the Poisson distribution.
- * This number multiplies the externe potential and is added to the membrane potential.
- */
-void Neuron::receiveNoise (){
-	static random_device rd;
-	static mt19937 gen(rd()); 
-	static poisson_distribution<int> poisson (ETA); 
-	
-	potential_membrane_ += poisson(gen)*POTENTIAL_EXT; 
+	delay_buffer_[(clock_ + delay) % delay_buffer_.size()] += j; 
+	if (delay_buffer_[(clock_ + delay) % delay_buffer_.size()] >0.0)cout << "je recois un message avec j = " << j <<endl; 
 }
 
 //============================getters===================================
-/*! 
- * @brief Getter of vector of membrane potentials
- * @return the vector de potentiels
- */
 vector<double> Neuron::getPotentials() const {return potentials_;} 
-/*! 
- * @brief Getter of vector of spikes times
- * @return the vector de spikes times
- */
 vector<double> Neuron::getTimes() const {return spikes_times_;}
-/*! 
- * @brief Getter of vector of the current membrane potential
- * @return the potential membrane 
- */
 double Neuron::getPotentialMembrane() const {return potential_membrane_;}
-/*! 
- * @brief Setter of vector of membrane potential
- * @param new value for the potential membrane
- */
 void Neuron::setPotentialMembrane(double potential) {potential_membrane_=potential;}
-/*! 
- * @brief Getter of external current
- * @return the external current
- */
-double Neuron::getExtCurrent() const{return ext_current_;}
-/*! 
- * @brief Setter of external current
- * @param new value for the external current
- */ 
+double Neuron::getExtCurrent() const{return ext_current_;} 
 void Neuron::setExtCurrent(double value){ext_current_=value;} 
-/*! 
- * @brief Getter of the neuron internal clock
- * @return the internal clock
- */
 int Neuron::getClock() const{return clock_;}
-/*! 
- * @brief Getter of array of the buffer of the future spikes 
- * @return the delay buffer
- */
 array<double, BUFFER_SIZE> Neuron::getBuffer(){return delay_buffer_;}
-/*! 
- * @brief Getter of boolean spiked 
- * @return the boolean spiked 
- */
 bool Neuron::getSpiked() const{return spiked_; } 
-/*! 
- * @brief Getter of number of spikes
- * @return integer of the number of spikes
- */
 int Neuron::getNbrSpikes() const{return nbr_spikes_;}
-/*! 
- * @brief Getter of the post synaptic potential
- * Depends on the type of neuron (exitatory or inhibitory)
- * @return the post synaptic potential J
- */
-double Neuron::getJ() const {return j_;}
-/*! 
- * @brief Add a value of connection at the end of the table 
- * 
- * @param new_connexion integer number corresponding to the index of a neuron of the Network
- */
-void Neuron::addConnexions(int new_connexion){connexions_.push_back(new_connexion);}
-/*! 
- * @brief Getter of the connexions_
- * @return table of the connexions to the neuron
- */
-vector<int> Neuron::getConnexions() const{return connexions_;} 
-/*! 
- * @brief Getter of the times of each spikes
- * @return table of the time of the spikes 
- */
-vector <double> Neuron::getSpikesTimes() const {return spikes_times_;} 
+
