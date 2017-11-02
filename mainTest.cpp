@@ -3,9 +3,9 @@
 #include "gtest/include/gtest/gtest.h"
 #include "Constantes.hpp"
 
-//teste si potentiel de membrane computed correctly and right time
+//tests if membrane potential computed correctly and right time
 TEST (NeuronTest, PositiveInput){
-	Neuron neuron(1); 
+	Neuron neuron(1,1); 
 	neuron.setExtCurrent(1.0); 
 
 	//test the computation of membrane potentiel
@@ -23,67 +23,96 @@ TEST (NeuronTest, PositiveInput){
 	neuron.update(2000);
 }	
 
+//tests the times of spiking
 TEST (Neuron_test, StandAloneSimulation){
-	Neuron neuron(1); 
+	Neuron neuron(1,1); 
 	neuron.setExtCurrent(10.1);
 	for (int i(0); i < 124; ++i){
-		bool spike = neuron.update(i); 
+		neuron.update(i); 
 	}
 	EXPECT_EQ(4, neuron.getNbrSpikes()); 
 }
 
-TEST (Neuron_test, MembranePotential){
-	Neuron neuron(1);
+//tests the membrane potential value before and after spiking
+TEST (NeuronTest, MembranePotential){
+	Neuron neuron(1, 1);
+	neuron.setExtCurrent(10.1); 
 	
-	for(int i(0); i<8; ++i){
+	for(int i(0); i<20; ++i){
 		neuron.update(i);
 	} 
-	EXPECT_NEAR(neuron.getPotentialMembrane(), 18, 3); 
+	//before neuron spikes so less than 20
+	EXPECT_NEAR(neuron.getPotentialMembrane(), 19, 2); 
 	
 	for(int i(8); i<15; ++i){
 		neuron.update(i);
 	}
+	//after neuron spikes during the refractory time
 	EXPECT_EQ(neuron.getPotentialMembrane(), 0.0); 
 
 }
-/*TEST (TwoNeurons, NoPSSpike){
-	Neuron neuron1, neuron2; 
+
+//tests the transfer of the potential from one neuron to another for exitatory neurons
+TEST (TwoNeurons, NoPSSpikeEXI){
+	Neuron neuron1(1,1), neuron2(1,1); 
 	int delay (DELAY);
 	neuron1.setExtCurrent(1.01);
 	//we wait for the first spike and see the impact on neuron2
-	for(auto i(0); i<925+delay; i++){
-		if(neuron1.update(1)){
-			neuron2.receiveSpike(i + static_cast<unsigned long>(delay), 0.1);
+	for(auto i(0); i<919+delay; i++){
+		neuron1.update(i);
+		if(neuron1.getSpiked()){
+			neuron2.receiveSpike(i + static_cast<unsigned long>(delay), Je);
+			//just spiked so refractory time
 			EXPECT_EQ(0.0, neuron1.getPotentialMembrane());
 		}
-		neuron2.update(1); 
+		neuron2.update(i); 
 	}
-	
 	EXPECT_EQ(0.1, neuron2.getPotentialMembrane()); 
-}*/
+}
 
-/*TEST (TwoNeurons, WithPSSpike){
-	Neuron neuron1, neuron2; 
-	neuron1.setExtCurrent(1.01);
-	neuron2.setExtCurrent(1.0);
+//tests the transfer for neurons that already have a potential
+TEST (TwoNeurons, WithPSSpikeEXI){
+	Neuron neuron1(1, 1), neuron2(1, 1); 
+	neuron1.setExtCurrent(10.1);
+	neuron2.setExtCurrent(10.0);
 	int delay (DELAY);
-	//neurons did not have time to reach the treshold 
-	for (auto i(0); i<1869+delay; i++){
-		if(neuron1.update(1)){
-			neuron2.receiveSpike(i+static_cast<unsigned long>(delay), 0.1);
+	for (auto i(0); i<6+delay; i++){
+		neuron1.update(i);	
+		if(neuron1.getSpiked()){
+			neuron2.receiveSpike(i+static_cast<unsigned long>(delay), neuron1.getJ());
+			//just spiked so refractory time
 			EXPECT_EQ(0.0, neuron1.getPotentialMembrane()); 
 		}
-		neuron2.update(1); 
+		//neuron2 don't have time to reach the treshold
+		neuron2.update(i); 
+
 	}
 	
 	//just before neuron2 spikes 
 	EXPECT_EQ(0, neuron2.getNbrSpikes()); 
 	neuron2.update(1);
+	//just spiked
 	EXPECT_EQ(0, neuron2.getPotentialMembrane());
-	///on veut que des que spiker retourne a 0
 	EXPECT_EQ(1, neuron2.getNbrSpikes()); 
-}*/
+}
 
+//tests the transfer of the potential from one neuron to another for inhibitory neurons
+TEST (TwoNeurons, NoPSSpikeInh){
+	Neuron neuron1(0,1), neuron2(0,1);  
+	neuron1.setExtCurrent(1.01);
+	int delay (DELAY); 
+	//we wait for the first spike and see the impact on neuron2
+	for(auto i(0); i<919+delay; i++){
+		neuron1.update(i);
+		if(neuron1.getSpiked()){
+			neuron2.receiveSpike(i + static_cast<unsigned long>(delay), neuron1.getJ());
+			//just spiked so refractory time
+			EXPECT_EQ(0.0, neuron1.getPotentialMembrane());
+		}
+		neuron2.update(i); 
+	}
+	EXPECT_EQ(-0.5, neuron2.getPotentialMembrane()); 
+}
 
 int main(int argc, char **argv) 
 {
