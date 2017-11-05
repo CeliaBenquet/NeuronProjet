@@ -7,8 +7,9 @@
  * @param exitatory boolean to determine the type of neuron inhibitor or exitator
  */
 Neuron::Neuron (bool exitatory, bool test)
-: exitatory_(exitatory), test_ (test), potential_membrane_(POTENTIAL_RESET), clock_(0),
-  spiked_(false),  ext_current_(EXT_CURRENT)
+: exitatory_(exitatory), test_ (test), potential_membrane_(POTENTIAL_RESET), 
+  nbr_spikes_(0), ext_current_(EXT_CURRENT), clock_(0),
+  spiked_(false)  
 {
 	nbr_spikes_=0;
 	spikes_times_.clear();

@@ -5,7 +5,9 @@ NeuronProjet is a project based on the work of Nicolas Brunel in " Dynamics of S
 
 The project can be run from the main. The utilisator can choose which type he wants from the simulations following : 
 Simulation 1: runs the simulation with the parameters from the Constantes.hpp file. 
-Simulation 2: runs the simulation with the parameters from the Constantes.hpp file and displays the evolution of the membrane potential for 4 neurons of the network in the file "membranepotential.txt".
+Simulation 2: runs the simulation with the parameters from the Constantes.hpp file and displays the evolution of the membrane potential for 4 neurons of the network in the file "membranepotential.txt". Better to do it with less neurons.
+Simulation 3: runs the simulation for 2 neurons a 1 connection.
+Simulation 4: runs the simulation with 1 neuron receiving an extern current.
 
 Classes of the project : 
 Simulation : allows to run different simualations. 
