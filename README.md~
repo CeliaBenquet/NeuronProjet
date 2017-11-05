@@ -2,12 +2,40 @@
 
 NeuronProjet is a project based on the work of Nicolas Brunel in " Dynamics of Sparsely Connected Networks of Excitatory and Inhibitory Spiking Neurons ". It consists in simulating the activity of 12500 neurons of 2 types, exitatory or inhibitory and observe the comportment of the network.
 
-The project can be run from the main. The utilisator can choose which type he wants from the simulations following : Simulation 1: runs the simulation with the parameters from the Constantes.hpp file. Simulation 2: runs the simulation with the parameters from the Constantes.hpp file and displays the evolution of the membrane potential for 4 neurons of the network in the file "membranepotential.txt".
 
-Classes of the project Simulation : allows to run different simualations. Neuron : Represents a neuron and its parameters. Network : Represents a network of neurons
+The project can be run from the main. The utilisator can choose which type he wants from the simulations following : 
+Simulation 1: runs the simulation with the parameters from the Constantes.hpp file. 
+Simulation 2: runs the simulation with the parameters from the Constantes.hpp file and displays the evolution of the membrane potential for 4 neurons of the network in the file "membranepotential.txt".
 
-Other files Constants : Regroups differents constants used in all the project. main : Executive file containing the main. The user choose a simulation and the main executes it with the parameters of the Constantes.hpp file. mainTest : regroups differents tests of the project. It is constituted of 3 parts : the tests one 1 neuron, one 2 neurons interacting together and neurons forming a network. The tests are tested with GoogleTest.
+Classes of the project : 
+Simulation : allows to run different simualations. 
+Neuron : Represents a neuron and its parameters. 
+Network : Represents a network of neurons
 
-To compile First go in the repertory projet1 then do a cmake . then a make. At this point the executories of the Simulation and the tests are ready to be executed. -> ./Neuron : launches the Simulation with the message "Enter the simulation you want to perform" (see before). -> ./Neuron_test : launches a serie of tests.
+Other files :
+Constants : Regroups differents constants used in all the project. 
+main : Executive file containing the main. The user choose a simulation and the main executes it with the parameters of the Constantes.hpp file. 
+mainTest : regroups differents tests of the project. It is constituted of 2 parts : the tests one 1 neuron and one 2 neurons interacting together. The tests are tested with GoogleTest.
 
-Complementary tools Doxygen : once you did the cmake, you can do make doc to compile the documentation for Doxygen. Table of plots : to visulise the evolution of the network, the spikes's times of each neurons are saved in a file : "spikes.gdf" during the simulation. To compute the graph, the file must be upload on the data plotter at the adress following : http://cd116-plot.antoinealb.net.
+To compile :
+First go in the repertory projet1 then do a cmake . then a make. At this point the executories of the Simulation and the tests are ready to be executed. 
+-> ./Neuron : launches the Simulation with the message "Enter the simulation you want to perform" (see before). 
+-> ./Neuron_test : launches a serie of tests.
+
+Complementary tools :
+Doxygen : once you did the cmake, you can do make doc to compile the documentation for Doxygen. 
+Table of plots : to visulise the evolution of the network, the spikes's times of each neurons are saved in a file : "spikes.gdf" during the simulation. This file needs to be upload on  https://try.jupyter.org/. Then when opening a new notebook in Python 3, the code to put is disponible in the file jupyter.py. When running the code, we obtain 2 graphs corresponding to the times of spikes and number of spikes of 50 random neurons from the 12500.
+
+The values of the constantes used to simulate the network can be modified in the file "Constantes.hpp".
+
+Depending on those values, the results plotted in the graphs are differents. We have 4 differents expermients this way.
+
+Figure A : Almost fully synchronized network, neurons firing regularly at high rates. G=3, ETA=2.
+Figure B : Fast oscillation of the global activity, neurons firing irregularly at a rate that is lower than the global frequency. G=6, ETA=4.
+Figure C : Stationary global activity (the current one), irregularly firing neurons. G=5, ETA=2.
+Figure D : Slow oscillation of the global activity, neurons firing
+irregularly at very low rates. G=4.5, ETA=0.9.
+
+
+-> ./Neuron : launches the Simulation with the message "Enter the simulation you want to perform" (see before).
+-> ./Neuron_test : launches a serie of tests.

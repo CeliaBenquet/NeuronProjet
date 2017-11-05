@@ -4,7 +4,7 @@
 #include "Constantes.hpp"
 
 //tests if membrane potential computed correctly and right time
-/*TEST (NeuronTest, PositiveInput){
+TEST (NeuronTest, PositiveInput){
 	Neuron neuron(1,1); 
 	neuron.setExtCurrent(1.0); 
 
@@ -52,7 +52,7 @@ TEST (NeuronTest, MembranePotential){
 	EXPECT_EQ(neuron.getPotentialMembrane(), 0.0); 
 
 }
-*/
+
 //tests the transfer of the potential from one neuron to another for exitatory neurons
 TEST (TwoNeurons, NoPSSpikeEXI){
 	Neuron neuron1(1,1), neuron2(1,1); 
@@ -76,9 +76,9 @@ TEST (TwoNeurons, WithPSSpikeEXI){
 	Neuron neuron1(1, 1), neuron2(1, 1); 
 	neuron1.setExtCurrent(1.01);
 	neuron2.setExtCurrent(1.0);
-	int delay (DELAY/STEP);
+	int delay (DELAY);
 	
-	for (auto i(0); i<777+delay; i++){
+	for (auto i(0); i<1867+delay; i++){
 		neuron1.update(i);	
 		if(neuron1.getSpiked()){
 			neuron2.receiveSpike(i+static_cast<unsigned long>(delay), neuron1.getJ());
@@ -87,7 +87,6 @@ TEST (TwoNeurons, WithPSSpikeEXI){
 		}
 		//neuron2 don't have time to reach the treshold
 		neuron2.update(i); 
-				cout << neuron2.getPotentialMembrane() <<endl; 
 	}
 	
 	//just before neuron2 spikes 

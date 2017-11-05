@@ -2,6 +2,9 @@
 #include <cassert>
 #include <random>
 
+
+//========================CONSTRUCTORs==================================
+
 /*!
  * @brief Initiate a network of inhibitory and exitatory neurons 
  *
@@ -43,6 +46,22 @@ Network::Network(Neuron* n1, Neuron* n2){
 	n1->addConnexions(1); 
 	
 }
+
+//========================DESTRUCTOR====================================
+/*!
+ * @brief Destructor
+ * 
+ * Delete the ptr of the neurons_ table at the end of the simulation
+ */
+Network::~Network() 
+{
+	for (size_t i (0); i < neurons_.size(); ++i){
+		delete neurons_[i];
+		neurons_[i] = nullptr;
+	}
+}
+
+//========================CONNECTIONS===================================
 
 /*!
  * @brief Create a table with random numbers using the uniform distribution.
@@ -145,18 +164,8 @@ void Network::createConnexions(){
 	//its size is random.
 }
 
-/*!
- * @brief Destructor
- * 
- * Delete the ptr of the neurons_ table at the end of the simulation
- */
-Network::~Network() 
-{
-	for (size_t i (0); i < neurons_.size(); ++i){
-		delete neurons_[i];
-		neurons_[i] = nullptr;
-	}
-}
+
+//=========================UPDATE=======================================
 
 /*!
  * @brief Update the network 
@@ -166,7 +175,7 @@ Network::~Network()
  *
  * @param time clock of the simulation, corresponds to an intervalle
  */
- 
+
 void Network::update (int time){
 	
 	for (size_t i(0); i < neurons_.size(); ++i) {
@@ -184,6 +193,8 @@ void Network::update (int time){
 		}	
 	}	
 }
+
+//==========================GUETTERS====================================
 
 /*!
  * @brief Getter of the table of all the neurones of the Network

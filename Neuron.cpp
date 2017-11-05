@@ -41,6 +41,8 @@ Neuron::~Neuron(){}
  * @param time clock of the global simulation 
  * @return boolean value if the neuron spiked in the time interval 
  */
+ 
+//=========================update=======================================
 void Neuron::update(int time)
 {
 	//reinitializes the boolean spiked_
@@ -141,7 +143,7 @@ void Neuron::receiveSpike (int delay , double j){
 void Neuron::receiveNoise (){
 	static random_device rd;
 	static mt19937 generator(rd()); 
-	static poisson_distribution<> poisson (NU_EXT*STEP); 
+	static poisson_distribution<> poisson (NU_EXT); 
 	potential_membrane_ += poisson(generator); 
 }
 

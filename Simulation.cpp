@@ -140,7 +140,7 @@ void Simulation::TwoNeurons()
 		for(size_t t(0); t<n.getNeurons().size(); ++t){
 			cout << "times when spikes occures for neuron " << t+1 << " : "<<endl;
 			for(size_t i(1); i < n.getNeurons()[t]->getSpikesTimes().size(); ++i){
-				cout << "Spikes #n " <<i<<"du neurons "<<t+1<<" at: " <<n.getNeurons()[t]->getSpikesTimes()[i]<<endl; 
+				cout << "Spikes #n " <<i<<" du neurons "<<t+1<<" at: " <<n.getNeurons()[t]->getSpikesTimes()[i]<<endl; 
 			}
 		}
 }
