@@ -12,7 +12,7 @@
  * 
  * @brief A simulation of a certain network 
  * 
- * The user can choose the time of the simulation and its objectif
+ * The user can choose the time of the simulation and its objective
  * 
  */
 
@@ -25,8 +25,10 @@ class Simulation
 	protected : 
 		void printPotential(); 
 		void rightSimulation(); 
+		void TwoNeurons();
+		void OneNeuron(); 
 
-		int Tstop_; ///< time of end of the simulation
+		int Tstop_; ///< number of intervall of time before end of the simulation
 		int n_simulation_; ///< number of the simulation
 }; 
 

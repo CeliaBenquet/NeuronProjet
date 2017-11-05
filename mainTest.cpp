@@ -4,13 +4,13 @@
 #include "Constantes.hpp"
 
 //tests if membrane potential computed correctly and right time
-TEST (NeuronTest, PositiveInput){
+/*TEST (NeuronTest, PositiveInput){
 	Neuron neuron(1,1); 
 	neuron.setExtCurrent(1.0); 
 
 	//test the computation of membrane potentiel
 	neuron.update(1);
-	EXPECT_EQ(TAU*(neuron.getExtCurrent()-exp(-STEP/TAU)), neuron.getPotentialMembrane()); 
+	EXPECT_EQ(neuron.getExtCurrent()*20.0*(1-exp(-0.1/20)), neuron.getPotentialMembrane()); 
 	
 	//test after multiple update
 	neuron.update(10000);
@@ -26,10 +26,11 @@ TEST (NeuronTest, PositiveInput){
 //tests the times of spiking
 TEST (Neuron_test, StandAloneSimulation){
 	Neuron neuron(1,1); 
-	neuron.setExtCurrent(10.1);
-	for (int i(0); i < 124; ++i){
+	neuron.setExtCurrent(1.01);
+	for (int i(0); i < 4000; ++i){
 		neuron.update(i); 
 	}
+	
 	EXPECT_EQ(4, neuron.getNbrSpikes()); 
 }
 
@@ -51,14 +52,14 @@ TEST (NeuronTest, MembranePotential){
 	EXPECT_EQ(neuron.getPotentialMembrane(), 0.0); 
 
 }
-
+*/
 //tests the transfer of the potential from one neuron to another for exitatory neurons
 TEST (TwoNeurons, NoPSSpikeEXI){
 	Neuron neuron1(1,1), neuron2(1,1); 
 	int delay (DELAY);
 	neuron1.setExtCurrent(1.01);
 	//we wait for the first spike and see the impact on neuron2
-	for(auto i(0); i<919+delay; i++){
+	for(auto i(0); i<921+delay; i++){
 		neuron1.update(i);
 		if(neuron1.getSpiked()){
 			neuron2.receiveSpike(i + static_cast<unsigned long>(delay), Je);
@@ -66,17 +67,18 @@ TEST (TwoNeurons, NoPSSpikeEXI){
 			EXPECT_EQ(0.0, neuron1.getPotentialMembrane());
 		}
 		neuron2.update(i); 
-	}
+ 	}
 	EXPECT_EQ(0.1, neuron2.getPotentialMembrane()); 
 }
 
 //tests the transfer for neurons that already have a potential
 TEST (TwoNeurons, WithPSSpikeEXI){
 	Neuron neuron1(1, 1), neuron2(1, 1); 
-	neuron1.setExtCurrent(10.1);
-	neuron2.setExtCurrent(10.0);
-	int delay (DELAY);
-	for (auto i(0); i<6+delay; i++){
+	neuron1.setExtCurrent(1.01);
+	neuron2.setExtCurrent(1.0);
+	int delay (DELAY/STEP);
+	
+	for (auto i(0); i<777+delay; i++){
 		neuron1.update(i);	
 		if(neuron1.getSpiked()){
 			neuron2.receiveSpike(i+static_cast<unsigned long>(delay), neuron1.getJ());
@@ -85,7 +87,7 @@ TEST (TwoNeurons, WithPSSpikeEXI){
 		}
 		//neuron2 don't have time to reach the treshold
 		neuron2.update(i); 
-
+				cout << neuron2.getPotentialMembrane() <<endl; 
 	}
 	
 	//just before neuron2 spikes 
@@ -97,12 +99,12 @@ TEST (TwoNeurons, WithPSSpikeEXI){
 }
 
 //tests the transfer of the potential from one neuron to another for inhibitory neurons
-TEST (TwoNeurons, NoPSSpikeInh){
+TEST (TwoNeurons, NoPSSpikeINH){
 	Neuron neuron1(0,1), neuron2(0,1);  
 	neuron1.setExtCurrent(1.01);
 	int delay (DELAY); 
 	//we wait for the first spike and see the impact on neuron2
-	for(auto i(0); i<919+delay; i++){
+	for(auto i(0); i<921+delay; i++){
 		neuron1.update(i);
 		if(neuron1.getSpiked()){
 			neuron2.receiveSpike(i + static_cast<unsigned long>(delay), neuron1.getJ());
